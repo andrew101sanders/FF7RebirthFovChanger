@@ -102,10 +102,10 @@ void HotkeyListener( HANDLE hProcess, uintptr_t fovAddrOpenWorld, uintptr_t fovA
 {
     const float step = 5.0f;
     const float defaultFov = 60.0f;
+    float desiredFov = defaultFov;
     bool plusPressed = false;
     bool minusPressed = false;
     bool asteriskPressed = false;
-
 
     while (running)
     {
@@ -114,58 +114,36 @@ void HotkeyListener( HANDLE hProcess, uintptr_t fovAddrOpenWorld, uintptr_t fovA
         bool currentMinus = GetAsyncKeyState( VK_SUBTRACT ) & 0x8000;
         bool currentAsterisk = GetAsyncKeyState( VK_MULTIPLY ) & 0x8000;
 
-        // Handle Numpad+
+        // Handle Numpad+ (increase FOV)
         if (currentPlus && !plusPressed)
         {
-            float currentFov;
-            if (ReadProcessMemory( hProcess, (LPCVOID)fovAddrOpenWorld, &currentFov, sizeof( currentFov ), NULL ) &&
-				ReadProcessMemory( hProcess, (LPCVOID)fovAddrCity, &currentFov, sizeof( currentFov ), NULL ) &&
-				ReadProcessMemory( hProcess, (LPCVOID)fovAddrCombat, &currentFov, sizeof( currentFov ), NULL ))
-            {
-                float newFov = currentFov + step;
-                WriteProcessMemory( hProcess, (LPVOID)fovAddrOpenWorld, &newFov, sizeof( newFov ), NULL );
-				WriteProcessMemory( hProcess, (LPVOID)fovAddrCity, &newFov, sizeof( newFov ), NULL );
-				WriteProcessMemory( hProcess, (LPVOID)fovAddrCombat, &newFov, sizeof( newFov ), NULL );
-                std::cout << "FOV increased to: " << newFov << std::endl;
-            }
+            desiredFov += step;
+            std::cout << "FOV increased to: " << desiredFov << std::endl;
         }
 
-        // Handle Numpad-
+        // Handle Numpad- (decrease FOV)
         if (currentMinus && !minusPressed)
         {
-            float currentFov;
-            if (ReadProcessMemory( hProcess, (LPCVOID)fovAddrOpenWorld, &currentFov, sizeof( currentFov ), NULL ) &&
-                ReadProcessMemory( hProcess, (LPCVOID)fovAddrCity, &currentFov, sizeof( currentFov ), NULL ) &&
-                ReadProcessMemory( hProcess, (LPCVOID)fovAddrCombat, &currentFov, sizeof( currentFov ), NULL ))
-            {
-                float newFov = currentFov - step;
-                WriteProcessMemory( hProcess, (LPVOID)fovAddrOpenWorld, &newFov, sizeof( newFov ), NULL );
-                WriteProcessMemory( hProcess, (LPVOID)fovAddrCity, &newFov, sizeof( newFov ), NULL );
-                WriteProcessMemory( hProcess, (LPVOID)fovAddrCombat, &newFov, sizeof( newFov ), NULL );
-                std::cout << "FOV decreased to: " << newFov << std::endl;
-            }
+            desiredFov -= step;
+            std::cout << "FOV decreased to: " << desiredFov << std::endl;
         }
 
-        // Handle Numpad* (reset)
+        // Handle Numpad* (reset to default)
         if (currentAsterisk && !asteriskPressed)
         {
-            WriteProcessMemory( hProcess, (LPVOID)fovAddrOpenWorld, &defaultFov, sizeof( defaultFov ), NULL );
-            WriteProcessMemory( hProcess, (LPVOID)fovAddrCity, &defaultFov, sizeof( defaultFov ), NULL );
-            WriteProcessMemory( hProcess, (LPVOID)fovAddrCombat, &defaultFov, sizeof( defaultFov ), NULL );
-            std::cout << "FOV reset to default: " << defaultFov << std::endl;
+            desiredFov = defaultFov;
+            std::cout << "FOV reset to default: " << desiredFov << std::endl;
         }
 
-        // Update key states
+        // Continuously write the desired FOV to all addresses
+        WriteProcessMemory( hProcess, (LPVOID)fovAddrOpenWorld, &desiredFov, sizeof( desiredFov ), NULL );
+        WriteProcessMemory( hProcess, (LPVOID)fovAddrCity, &desiredFov, sizeof( desiredFov ), NULL );
+        WriteProcessMemory( hProcess, (LPVOID)fovAddrCombat, &desiredFov, sizeof( desiredFov ), NULL );
+
+        // Update key states for edge detection
         plusPressed = currentPlus;
         minusPressed = currentMinus;
         asteriskPressed = currentAsterisk;
-
-        // Check for ESC to exit
-        //if (GetAsyncKeyState( VK_ESCAPE ) & 0x8000)
-        //{
-        //    running = false;
-        //    break;
-        //}
 
         Sleep( 50 );
     }
