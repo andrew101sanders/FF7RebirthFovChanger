@@ -51,7 +51,37 @@ uintptr_t GetModuleBaseAddress( DWORD pid, const wchar_t* modName )
     return baseAddr;
 }
 
-uintptr_t ResolvePointerChain( HANDLE hProcess, uintptr_t baseAddr )
+uintptr_t ResolvePointerChainCombatCam( HANDLE hProcess, uintptr_t baseAddr )
+{
+    uintptr_t addr = baseAddr + 0x090A71E8; // Initial offset
+    if (!ReadProcessMemory( hProcess, (LPCVOID)addr, &addr, sizeof( addr ), NULL )) return 0;
+
+    addr += 0x50;
+    if (!ReadProcessMemory( hProcess, (LPCVOID)addr, &addr, sizeof( addr ), NULL )) return 0;
+
+    addr += 0x438;
+
+    return addr;
+}
+
+uintptr_t ResolvePointerChainCityCam( HANDLE hProcess, uintptr_t baseAddr )
+{
+    uintptr_t addr = baseAddr + 0x092A0388; // Initial offset
+    if (!ReadProcessMemory( hProcess, (LPCVOID)addr, &addr, sizeof( addr ), NULL )) return 0;
+
+    // Follow the pointer chain: ->B8->40->470
+    addr += 0xB8;
+    if (!ReadProcessMemory( hProcess, (LPCVOID)addr, &addr, sizeof( addr ), NULL )) return 0;
+
+    addr += 0x40;
+    if (!ReadProcessMemory( hProcess, (LPCVOID)addr, &addr, sizeof( addr ), NULL )) return 0;
+
+    addr += 0x340;
+
+    return addr;
+}
+
+uintptr_t ResolvePointerChainOpenWorldCam( HANDLE hProcess, uintptr_t baseAddr )
 {
     uintptr_t addr = baseAddr + 0x092A0388; // Initial offset
     if (!ReadProcessMemory( hProcess, (LPCVOID)addr, &addr, sizeof( addr ), NULL )) return 0;
@@ -68,13 +98,14 @@ uintptr_t ResolvePointerChain( HANDLE hProcess, uintptr_t baseAddr )
     return addr;
 }
 
-void HotkeyListener( HANDLE hProcess, uintptr_t fovAddr, std::atomic<bool>& running )
+void HotkeyListener( HANDLE hProcess, uintptr_t fovAddrOpenWorld, uintptr_t fovAddrCity, uintptr_t fovAddrCombat, std::atomic<bool>& running )
 {
     const float step = 5.0f;
     const float defaultFov = 60.0f;
     bool plusPressed = false;
     bool minusPressed = false;
     bool asteriskPressed = false;
+
 
     while (running)
     {
@@ -87,10 +118,14 @@ void HotkeyListener( HANDLE hProcess, uintptr_t fovAddr, std::atomic<bool>& runn
         if (currentPlus && !plusPressed)
         {
             float currentFov;
-            if (ReadProcessMemory( hProcess, (LPCVOID)fovAddr, &currentFov, sizeof( currentFov ), NULL ))
+            if (ReadProcessMemory( hProcess, (LPCVOID)fovAddrOpenWorld, &currentFov, sizeof( currentFov ), NULL ) &&
+				ReadProcessMemory( hProcess, (LPCVOID)fovAddrCity, &currentFov, sizeof( currentFov ), NULL ) &&
+				ReadProcessMemory( hProcess, (LPCVOID)fovAddrCombat, &currentFov, sizeof( currentFov ), NULL ))
             {
                 float newFov = currentFov + step;
-                WriteProcessMemory( hProcess, (LPVOID)fovAddr, &newFov, sizeof( newFov ), NULL );
+                WriteProcessMemory( hProcess, (LPVOID)fovAddrOpenWorld, &newFov, sizeof( newFov ), NULL );
+				WriteProcessMemory( hProcess, (LPVOID)fovAddrCity, &newFov, sizeof( newFov ), NULL );
+				WriteProcessMemory( hProcess, (LPVOID)fovAddrCombat, &newFov, sizeof( newFov ), NULL );
                 std::cout << "FOV increased to: " << newFov << std::endl;
             }
         }
@@ -99,10 +134,14 @@ void HotkeyListener( HANDLE hProcess, uintptr_t fovAddr, std::atomic<bool>& runn
         if (currentMinus && !minusPressed)
         {
             float currentFov;
-            if (ReadProcessMemory( hProcess, (LPCVOID)fovAddr, &currentFov, sizeof( currentFov ), NULL ))
+            if (ReadProcessMemory( hProcess, (LPCVOID)fovAddrOpenWorld, &currentFov, sizeof( currentFov ), NULL ) &&
+                ReadProcessMemory( hProcess, (LPCVOID)fovAddrCity, &currentFov, sizeof( currentFov ), NULL ) &&
+                ReadProcessMemory( hProcess, (LPCVOID)fovAddrCombat, &currentFov, sizeof( currentFov ), NULL ))
             {
                 float newFov = currentFov - step;
-                WriteProcessMemory( hProcess, (LPVOID)fovAddr, &newFov, sizeof( newFov ), NULL );
+                WriteProcessMemory( hProcess, (LPVOID)fovAddrOpenWorld, &newFov, sizeof( newFov ), NULL );
+                WriteProcessMemory( hProcess, (LPVOID)fovAddrCity, &newFov, sizeof( newFov ), NULL );
+                WriteProcessMemory( hProcess, (LPVOID)fovAddrCombat, &newFov, sizeof( newFov ), NULL );
                 std::cout << "FOV decreased to: " << newFov << std::endl;
             }
         }
@@ -110,7 +149,9 @@ void HotkeyListener( HANDLE hProcess, uintptr_t fovAddr, std::atomic<bool>& runn
         // Handle Numpad* (reset)
         if (currentAsterisk && !asteriskPressed)
         {
-            WriteProcessMemory( hProcess, (LPVOID)fovAddr, &defaultFov, sizeof( defaultFov ), NULL );
+            WriteProcessMemory( hProcess, (LPVOID)fovAddrOpenWorld, &defaultFov, sizeof( defaultFov ), NULL );
+            WriteProcessMemory( hProcess, (LPVOID)fovAddrCity, &defaultFov, sizeof( defaultFov ), NULL );
+            WriteProcessMemory( hProcess, (LPVOID)fovAddrCombat, &defaultFov, sizeof( defaultFov ), NULL );
             std::cout << "FOV reset to default: " << defaultFov << std::endl;
         }
 
@@ -189,8 +230,10 @@ int main()
 	std::cout << "Found module base address: 0x" << std::hex << moduleBase << std::dec << std::endl;
 
     // Resolve pointer chain
-    uintptr_t fovAddr = ResolvePointerChain( hProcess, moduleBase );
-    if (!fovAddr)
+	uintptr_t fovAddrOpenWorldCam = ResolvePointerChainOpenWorldCam( hProcess, moduleBase );
+	uintptr_t fovAddrCityCam = ResolvePointerChainCityCam( hProcess, moduleBase );
+	uintptr_t fovAddrCombatCam = ResolvePointerChainCombatCam( hProcess, moduleBase );
+    if (!fovAddrOpenWorldCam || !fovAddrCityCam || !fovAddrCombatCam)
     {
         std::cerr << "Failed to resolve pointer chain!" << std::endl;
         std::cerr << "Exiting in 5 seconds..." << std::endl;
@@ -198,12 +241,20 @@ int main()
         CloseHandle( hProcess );
         return 1;
     }
-	std::cout << "Resolved FOV address: 0x" << std::hex << fovAddr << std::dec << std::endl;
+	std::cout << "Resolved FOV address for Open World (?) Cam: 0x" << std::hex << fovAddrOpenWorldCam << std::dec << std::endl;
+	std::cout << "Resolved FOV address for City Cam (?): 0x" << std::hex << fovAddrCityCam << std::dec << std::endl;
+	std::cout << "Resolved FOV address for Combat Cam (?): 0x" << std::hex << fovAddrCombatCam << std::dec << std::endl;
 
-    float currentFov;
-    if (ReadProcessMemory( hProcess, (LPCVOID)fovAddr, &currentFov, sizeof( currentFov ), NULL ))
+    float currentOpenWorldFov;
+    float currentCityFov;
+    float currentCombatFov;
+    if (ReadProcessMemory( hProcess, (LPCVOID)(fovAddrOpenWorldCam), &currentOpenWorldFov, sizeof( currentOpenWorldFov ), NULL ) &&
+		ReadProcessMemory( hProcess, (LPCVOID)(fovAddrCityCam), &currentCityFov, sizeof( currentCityFov ), NULL )&&
+		ReadProcessMemory( hProcess, (LPCVOID)(fovAddrCombatCam), &currentCombatFov, sizeof( currentCombatFov ), NULL ))
     {
-        std::cout << "Initial FOV: " << currentFov << std::endl;
+        std::cout << "Initial Open World (?) FOV: " << currentOpenWorldFov << std::endl;
+		std::cout << "Initial City (?) FOV: " << currentCityFov << std::endl;
+		std::cout << "Initial Combat (?) FOV: " << currentCombatFov << std::endl;
         std::cout << "\n=== FOV Control Active ===" << std::endl;
         std::cout << "Monitoring game status automatically." << std::endl;
         std::cout << "Numpad + : Increase FOV by 5" << std::endl;
@@ -227,7 +278,7 @@ int main()
 
     // Start hotkey listener
     std::atomic<bool> running( true );
-    std::thread hotkeyThread( HotkeyListener, hProcess, fovAddr, std::ref( running ) );
+    std::thread hotkeyThread( HotkeyListener, hProcess, fovAddrOpenWorldCam, fovAddrCityCam, fovAddrCombatCam, std::ref( running ) );
 
     // Main monitoring loop
     int safetyCounter = 0;
