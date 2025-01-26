@@ -20,3 +20,8 @@ The program detects if the game is closed and will gracefully exit.
 No external dependencies so building is pretty straightforward.
 Just clone the repo, open the solution in Visual Studio and build the project.
 The executable will be in the bin folder.
+
+## Other
+
+Finds [[["ff7rebirth_.exe" + 0x092A0388] + 0xB8] + 0x40] + 0x470, which a the static pointer chain address to the FOV value.
+This pointer chain is the shortest I could find using Cheat Engine's pointer scan feature.
