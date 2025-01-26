@@ -694,6 +694,264 @@
         </CheatEntry>
       </CheatEntries>
     </CheatEntry>
+    <CheatEntry>
+      <ID>89</ID>
+      <Description>"Fov Value 4 (FOV CVar)"</Description>
+      <Options moManualExpandCollapse="1"/>
+      <VariableType>Float</VariableType>
+      <Address>"ff7rebirth_.exe"+09020218</Address>
+      <Offsets>
+        <Offset>244</Offset>
+        <Offset>E8</Offset>
+        <Offset>5F0</Offset>
+      </Offsets>
+      <CheatEntries>
+        <CheatEntry>
+          <ID>93</ID>
+          <Description>"pointerscan result"</Description>
+          <VariableType>Float</VariableType>
+          <Address>"ff7rebirth_.exe"+0929D838</Address>
+          <Offsets>
+            <Offset>244</Offset>
+            <Offset>E8</Offset>
+            <Offset>D8</Offset>
+          </Offsets>
+        </CheatEntry>
+        <CheatEntry>
+          <ID>90</ID>
+          <Description>"pointerscan result"</Description>
+          <VariableType>Float</VariableType>
+          <Address>"ff7rebirth_.exe"+0924D070</Address>
+          <Offsets>
+            <Offset>244</Offset>
+            <Offset>E8</Offset>
+            <Offset>B40</Offset>
+          </Offsets>
+        </CheatEntry>
+        <CheatEntry>
+          <ID>91</ID>
+          <Description>"pointerscan result"</Description>
+          <VariableType>Float</VariableType>
+          <Address>"ff7rebirth_.exe"+0929BB60</Address>
+          <Offsets>
+            <Offset>244</Offset>
+            <Offset>2C0</Offset>
+            <Offset>30</Offset>
+          </Offsets>
+        </CheatEntry>
+        <CheatEntry>
+          <ID>92</ID>
+          <Description>"pointerscan result"</Description>
+          <VariableType>Float</VariableType>
+          <Address>"ff7rebirth_.exe"+0929D838</Address>
+          <Offsets>
+            <Offset>244</Offset>
+            <Offset>E8</Offset>
+            <Offset>D0</Offset>
+          </Offsets>
+        </CheatEntry>
+        <CheatEntry>
+          <ID>94</ID>
+          <Description>"pointerscan result"</Description>
+          <VariableType>Float</VariableType>
+          <Address>"ff7rebirth_.exe"+0929E808</Address>
+          <Offsets>
+            <Offset>244</Offset>
+            <Offset>298</Offset>
+            <Offset>260</Offset>
+          </Offsets>
+        </CheatEntry>
+        <CheatEntry>
+          <ID>95</ID>
+          <Description>"pointerscan result"</Description>
+          <VariableType>Float</VariableType>
+          <Address>"ff7rebirth_.exe"+06FCED70</Address>
+          <Offsets>
+            <Offset>244</Offset>
+            <Offset>E8</Offset>
+            <Offset>A0</Offset>
+            <Offset>960</Offset>
+          </Offsets>
+        </CheatEntry>
+        <CheatEntry>
+          <ID>96</ID>
+          <Description>"pointerscan result"</Description>
+          <VariableType>Float</VariableType>
+          <Address>"ff7rebirth_.exe"+06FCED70</Address>
+          <Offsets>
+            <Offset>244</Offset>
+            <Offset>E8</Offset>
+            <Offset>A0</Offset>
+            <Offset>610</Offset>
+          </Offsets>
+        </CheatEntry>
+        <CheatEntry>
+          <ID>97</ID>
+          <Description>"pointerscan result"</Description>
+          <VariableType>Float</VariableType>
+          <Address>"ff7rebirth_.exe"+09126A00</Address>
+          <Offsets>
+            <Offset>244</Offset>
+            <Offset>E8</Offset>
+            <Offset>A0</Offset>
+            <Offset>5C0</Offset>
+          </Offsets>
+        </CheatEntry>
+        <CheatEntry>
+          <ID>98</ID>
+          <Description>"pointerscan result"</Description>
+          <VariableType>Float</VariableType>
+          <Address>"ff7rebirth_.exe"+06FCED70</Address>
+          <Offsets>
+            <Offset>244</Offset>
+            <Offset>E8</Offset>
+            <Offset>A0</Offset>
+            <Offset>6A0</Offset>
+          </Offsets>
+        </CheatEntry>
+        <CheatEntry>
+          <ID>99</ID>
+          <Description>"pointerscan result"</Description>
+          <VariableType>Float</VariableType>
+          <Address>"ff7rebirth_.exe"+09126840</Address>
+          <Offsets>
+            <Offset>244</Offset>
+            <Offset>E8</Offset>
+            <Offset>A0</Offset>
+            <Offset>580</Offset>
+          </Offsets>
+        </CheatEntry>
+        <CheatEntry>
+          <ID>100</ID>
+          <Description>"pointerscan result"</Description>
+          <VariableType>Float</VariableType>
+          <Address>"ff7rebirth_.exe"+06FCED70</Address>
+          <Offsets>
+            <Offset>244</Offset>
+            <Offset>E8</Offset>
+            <Offset>A0</Offset>
+            <Offset>8A0</Offset>
+          </Offsets>
+        </CheatEntry>
+        <CheatEntry>
+          <ID>101</ID>
+          <Description>"pointerscan result"</Description>
+          <VariableType>Float</VariableType>
+          <Address>"ff7rebirth_.exe"+09169A10</Address>
+          <Offsets>
+            <Offset>244</Offset>
+            <Offset>E8</Offset>
+            <Offset>F0</Offset>
+            <Offset>8</Offset>
+          </Offsets>
+        </CheatEntry>
+        <CheatEntry>
+          <ID>102</ID>
+          <Description>"pointerscan result"</Description>
+          <VariableType>Float</VariableType>
+          <Address>"ff7rebirth_.exe"+0929E808</Address>
+          <Offsets>
+            <Offset>244</Offset>
+            <Offset>2C0</Offset>
+            <Offset>C0</Offset>
+            <Offset>280</Offset>
+          </Offsets>
+        </CheatEntry>
+        <CheatEntry>
+          <ID>103</ID>
+          <Description>"pointerscan result"</Description>
+          <VariableType>Float</VariableType>
+          <Address>"ff7rebirth_.exe"+09352B38</Address>
+          <Offsets>
+            <Offset>244</Offset>
+            <Offset>E8</Offset>
+            <Offset>5F0</Offset>
+            <Offset>130</Offset>
+            <Offset>100</Offset>
+          </Offsets>
+        </CheatEntry>
+        <CheatEntry>
+          <ID>104</ID>
+          <Description>"pointerscan result"</Description>
+          <VariableType>Float</VariableType>
+          <Address>"ff7rebirth_.exe"+09352AF0</Address>
+          <Offsets>
+            <Offset>244</Offset>
+            <Offset>E8</Offset>
+            <Offset>5F0</Offset>
+            <Offset>130</Offset>
+            <Offset>100</Offset>
+          </Offsets>
+        </CheatEntry>
+        <CheatEntry>
+          <ID>105</ID>
+          <Description>"pointerscan result"</Description>
+          <VariableType>Float</VariableType>
+          <Address>"ff7rebirth_.exe"+09350FF8</Address>
+          <Offsets>
+            <Offset>244</Offset>
+            <Offset>E8</Offset>
+            <Offset>B40</Offset>
+            <Offset>130</Offset>
+            <Offset>20</Offset>
+          </Offsets>
+        </CheatEntry>
+        <CheatEntry>
+          <ID>107</ID>
+          <Description>"pointerscan result"</Description>
+          <VariableType>Float</VariableType>
+          <Address>"ff7rebirth_.exe"+0901A358</Address>
+          <Offsets>
+            <Offset>244</Offset>
+            <Offset>C0</Offset>
+            <Offset>A8</Offset>
+            <Offset>30</Offset>
+            <Offset>100</Offset>
+          </Offsets>
+        </CheatEntry>
+        <CheatEntry>
+          <ID>108</ID>
+          <Description>"pointerscan result"</Description>
+          <VariableType>Float</VariableType>
+          <Address>"ff7rebirth_.exe"+06FCED70</Address>
+          <Offsets>
+            <Offset>244</Offset>
+            <Offset>E8</Offset>
+            <Offset>20</Offset>
+            <Offset>20</Offset>
+            <Offset>790</Offset>
+          </Offsets>
+        </CheatEntry>
+        <CheatEntry>
+          <ID>109</ID>
+          <Description>"pointerscan result"</Description>
+          <VariableType>Float</VariableType>
+          <Address>"ff7rebirth_.exe"+092A0328</Address>
+          <Offsets>
+            <Offset>244</Offset>
+            <Offset>E8</Offset>
+            <Offset>E8</Offset>
+            <Offset>A8</Offset>
+            <Offset>20</Offset>
+            <Offset>288</Offset>
+          </Offsets>
+        </CheatEntry>
+        <CheatEntry>
+          <ID>110</ID>
+          <Description>"pointerscan result"</Description>
+          <VariableType>Float</VariableType>
+          <Address>"ff7rebirth_.exe"+09189EF0</Address>
+          <Offsets>
+            <Offset>244</Offset>
+            <Offset>E8</Offset>
+            <Offset>E8</Offset>
+            <Offset>A8</Offset>
+            <Offset>20</Offset>
+            <Offset>148</Offset>
+          </Offsets>
+        </CheatEntry>
+      </CheatEntries>
+    </CheatEntry>
   </CheatEntries>
   <CheatCodes>
     <CodeEntry>

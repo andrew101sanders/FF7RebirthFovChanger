@@ -103,7 +103,6 @@ uintptr_t ResolvePointerChainFOVCvar( HANDLE hProcess, uintptr_t baseAddr )
     uintptr_t addr = baseAddr + 0x09020218; // Initial offset
     if (!ReadProcessMemory( hProcess, (LPCVOID)addr, &addr, sizeof( addr ), NULL )) return 0;
 
-    // Follow the pointer chain: ->B8->40->470
     addr += 0x5F0;
     if (!ReadProcessMemory( hProcess, (LPCVOID)addr, &addr, sizeof( addr ), NULL )) return 0;
 
