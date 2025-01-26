@@ -7,12 +7,16 @@ Shoutout to emoose's [FFVIIHook](https://www.nexusmods.com/finalfantasy7rebirth/
 
 ## Usage
 
-Run the executable and press the hotkeys to change the fov. The default hotkeys are:
+Run the executable and press the hotkeys to change the fov. 
+Use __FF7RebirthFovMod.ini__ to set custom hotkeys and initialFov.
+If the file does not exist, the program will create it with default values.
 
- - Numpad + : Increase FOV by 5
- - Numpad - : Decrease FOV by 5
- - Numpad * : Set to 60
- - Numpad / : Reset to 0 (Default FOV Cvar)
+The default hotkeys are:
+
+ - Keypad + : Increase FOV by 5
+ - Keypad - : Decrease FOV by 5
+ - Keypad * : Set to 60
+ - Keypad / : Reset to 0 (Default FOV Cvar)
 
 The game uses 0 as the default FOV Cvar value, which lets the game know to use default camera FOVs.
 For example, Cloud's section in Nibelheim has a default FOV of 65, but open world sections are generally 60.
