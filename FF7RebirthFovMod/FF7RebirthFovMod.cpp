@@ -156,11 +156,12 @@ int main()
 
     if (!found)
     {
-        std::cerr << "Process not found!" << std::endl;
+        std::cerr << "ff7rebirth_.exe not found!" << std::endl;
 	    std::cerr << "Exiting in 5 seconds..." << std::endl;
 		Sleep( 5000 );
         return 1;
     }
+	std::cout << "Found ff7rebirth_.exe with PID: " << pid << std::endl;
 
     // Get process handle with additional access flags
     HANDLE hProcess = OpenProcess( PROCESS_VM_READ | PROCESS_VM_WRITE |
@@ -168,23 +169,24 @@ int main()
         FALSE, pid );
     if (!hProcess)
     {
-        std::cerr << "Failed to open process! Error: " << GetLastError() << std::endl;
+        std::cerr << "Failed to open ff7rebirth_.exe! Error: " << GetLastError() << std::endl;
         std::cerr << "Exiting in 5 seconds..." << std::endl;
         Sleep( 5000 );
         return 1;
     }
-
+	std::cout << "Successfully opened ff7rebirth_.exe game process." << std::endl;
 
     // Get base address
     uintptr_t moduleBase = GetModuleBaseAddress( pid, L"ff7rebirth_.exe" );
     if (!moduleBase)
     {
-        std::cerr << "Failed to find module base address!" << std::endl;
+        std::cerr << "Failed to find module base address of ff7rebirth_.exe!" << std::endl;
         std::cerr << "Exiting in 5 seconds..." << std::endl;
         Sleep( 5000 );
         CloseHandle( hProcess );
         return 1;
     }
+	std::cout << "Found module base address: 0x" << std::hex << moduleBase << std::dec << std::endl;
 
     // Resolve pointer chain
     uintptr_t fovAddr = ResolvePointerChain( hProcess, moduleBase );
@@ -196,6 +198,7 @@ int main()
         CloseHandle( hProcess );
         return 1;
     }
+	std::cout << "Resolved FOV address: 0x" << std::hex << fovAddr << std::dec << std::endl;
 
     float currentFov;
     if (ReadProcessMemory( hProcess, (LPCVOID)fovAddr, &currentFov, sizeof( currentFov ), NULL ))
@@ -209,7 +212,15 @@ int main()
         //std::cout << "ESC      : Exit program" << std::endl;
         std::cout << "\nInput listening started..." << std::endl;
         std::cout << "You can safely close this console window at any time to stop\n";
-    }
+	}
+	else
+	{
+		std::cerr << "Failed to read initial FOV!" << std::endl;
+		std::cerr << "Exiting in 5 seconds..." << std::endl;
+		CloseHandle( hProcess );
+		Sleep( 5000 );
+		return 1;
+	}
 
     // Set console close handler
     SetConsoleCtrlHandler( ConsoleHandler, TRUE );
