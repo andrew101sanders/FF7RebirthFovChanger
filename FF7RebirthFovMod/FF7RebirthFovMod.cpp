@@ -157,6 +157,8 @@ int main()
     if (!found)
     {
         std::cerr << "Process not found!" << std::endl;
+	    std::cerr << "Exiting in 5 seconds..." << std::endl;
+		Sleep( 5000 );
         return 1;
     }
 
@@ -167,6 +169,8 @@ int main()
     if (!hProcess)
     {
         std::cerr << "Failed to open process! Error: " << GetLastError() << std::endl;
+        std::cerr << "Exiting in 5 seconds..." << std::endl;
+        Sleep( 5000 );
         return 1;
     }
 
@@ -176,6 +180,8 @@ int main()
     if (!moduleBase)
     {
         std::cerr << "Failed to find module base address!" << std::endl;
+        std::cerr << "Exiting in 5 seconds..." << std::endl;
+        Sleep( 5000 );
         CloseHandle( hProcess );
         return 1;
     }
@@ -185,6 +191,8 @@ int main()
     if (!fovAddr)
     {
         std::cerr << "Failed to resolve pointer chain!" << std::endl;
+        std::cerr << "Exiting in 5 seconds..." << std::endl;
+        Sleep( 5000 );
         CloseHandle( hProcess );
         return 1;
     }
@@ -246,7 +254,8 @@ int main()
     }
 
     std::cout << "\nController shutdown complete. Safe to close." << std::endl;
-    Sleep( 2000 ); // Give time to read messages
+    std::cerr << "Exiting in 5 seconds..." << std::endl;
+    Sleep( 5000 );
 
     return 0;
 }
