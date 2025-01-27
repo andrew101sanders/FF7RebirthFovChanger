@@ -3,6 +3,8 @@
 The default fov of FF7 Rebirth is a pretty absurd 60 degrees. 
 This is a simple C++ Console program to change the field of view in the PC version of Final Fantasy VII Rebirth.
 
+**Lyall's FF7RebirthFix is a more comprehensive FF7 Rebirth mod that includes adjusting gameplay FOV and disabling vignette. I recommend it over this program if you do not need to change the fov dynamically! https://github.com/Lyall/FF7RebirthFix**
+
 Shoutout to emoose's [FFVIIHook](https://www.nexusmods.com/finalfantasy7rebirth/mods/4) and Cheat Engine's pointer scan feature.
 
 ## Usage
