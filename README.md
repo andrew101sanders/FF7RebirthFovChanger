@@ -1,4 +1,8 @@
+
+
 # FF7RebirthFovChanger
+
+[![Github All Releases](https://img.shields.io/github/downloads/andrew101sanders/FF7RebirthFovChanger/total.svg)](https://github.com/andrew101sanders/FF7RebirthFovChanger/releases)
 
 The default fov of FF7 Rebirth is a pretty absurd 60 degrees. 
 This is a simple C++ Console program to change the field of view in the PC version of Final Fantasy VII Rebirth.
