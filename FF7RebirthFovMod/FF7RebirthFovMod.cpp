@@ -261,20 +261,103 @@ uintptr_t ResolvePointerChainOpenWorldCam( HANDLE hProcess, uintptr_t baseAddr )
     return addr;
 }
 
-uintptr_t ResolvePointerChainFOVCvar( HANDLE hProcess, uintptr_t baseAddr )
+struct PointerChain
 {
-    uintptr_t addr = baseAddr + 0x09020218; // Initial offset
-    if (!ReadProcessMemory( hProcess, (LPCVOID)addr, &addr, sizeof( addr ), NULL )) return 0;
+    uintptr_t base_offset;
+    std::vector<uintptr_t> offsets;
+};
 
-    addr += 0x5F0;
-    if (!ReadProcessMemory( hProcess, (LPCVOID)addr, &addr, sizeof( addr ), NULL )) return 0;
+uintptr_t ResolvePointerChain( HANDLE hProcess, uintptr_t baseAddr, const PointerChain& chain )
+{
+    uintptr_t addr = baseAddr + chain.base_offset;
 
-    addr += 0xE8;
-    if (!ReadProcessMemory( hProcess, (LPCVOID)addr, &addr, sizeof( addr ), NULL )) return 0;
+    printf( "\nTesting pointer chain:\n" );
+    printf( "Address: (\"ff7rebirth_.exe\")0x%llX + 0x%llX\n", baseAddr, chain.base_offset );
 
-    addr += 0x244;
+    for (size_t i = 0; i < chain.offsets.size(); ++i)
+    {
+        printf( "  Step %zu: Reading 0x%llX", i + 1, addr );
+
+        uintptr_t next_addr;
+        if (!ReadProcessMemory( hProcess, reinterpret_cast<LPCVOID>( addr ), &next_addr, sizeof( next_addr ), NULL ))
+        {
+            printf( " - FAILED\n" );
+            return 0;
+        }
+
+        printf( " -> Value: 0x%llX\n", next_addr );
+        printf( "     Adding offset 0x%llX\n", chain.offsets[i] );
+
+        addr = next_addr + chain.offsets[i];
+    }
+
+    printf( "Final address: 0x%llX\n", addr );
+
+
+    // Light value checking
+	printf( "Checking if float value at offset is within valid range...\n" );
+    float value;
+    if (!ReadProcessMemory( hProcess, reinterpret_cast<LPCVOID>(addr), &value, sizeof( value ), NULL ))
+    {
+		printf( "Failed to read value at address 0x%llX\n", addr );
+        return 0;
+    }
+    if (value < -1000.0f || value > 1000.0f) 
+    {
+		printf( "Value out of range: %f\n", value );
+        return 0; 
+    }
+	printf( "Value within valid range: %f\n", value );
 
     return addr;
+}
+
+uintptr_t ResolvePointerChainFOVCvar( HANDLE hProcess, uintptr_t baseAddr )
+{
+    std::vector<PointerChain> chains = {
+        // Main entry (ID89)
+        {0x09020218, {0x5F0, 0xE8, 0x244}},
+        // Child entries (ID93, ID90, etc.)
+        {0x0929D838, {0xD8, 0xE8, 0x244}},
+        {0x0924D070, {0xB40, 0xE8, 0x244}},
+        {0x0929BB60, {0x30, 0x2C0, 0x244}},
+        {0x0929D838, {0xD0, 0xE8, 0x244}},
+        {0x0929E808, {0x260, 0x298, 0x244}},
+        {0x06FCED70, {0x960, 0xA0, 0xE8, 0x244}},
+        {0x06FCED70, {0x610, 0xA0, 0xE8, 0x244}},
+        {0x09126A00, {0x5C0, 0xA0, 0xE8, 0x244}},
+        {0x06FCED70, {0x6A0, 0xA0, 0xE8, 0x244}},
+        {0x09126840, {0x580, 0xA0, 0xE8, 0x244}},
+        {0x06FCED70, {0x8A0, 0xA0, 0xE8, 0x244}},
+        {0x09169A10, {0x8, 0xF0, 0xE8, 0x244}},
+        {0x0929E808, {0x280, 0xC0, 0x2C0, 0x244}},
+        {0x09352B38, {0x100, 0x130, 0x5F0, 0xE8, 0x244}},
+        {0x09352AF0, {0x100, 0x130, 0x5F0, 0xE8, 0x244}},
+        {0x09350FF8, {0x20, 0x130, 0xB40, 0xE8, 0x244}},
+        {0x0901A358, {0x100, 0x30, 0xA8, 0xC0, 0x244}},
+        {0x06FCED70, {0x790, 0x20, 0x20, 0xE8, 0x244}},
+        {0x092A0328, {0x288, 0x20, 0xA8, 0xE8, 0xE8, 0x244}},
+        {0x09189EF0, {0x148, 0x20, 0xA8, 0xE8, 0xE8, 0x244}},
+    };
+
+    printf( "Starting pointer chain resolution...\n" );
+    printf( "Total chains to test: %zu\n", chains.size() );
+
+    for (size_t i = 0; i < chains.size(); ++i)
+    {
+        printf( "\n--- Testing chain %zu/%zu ---\n", i + 1, chains.size() );
+        uintptr_t result = ResolvePointerChain( hProcess, baseAddr, chains[i] );
+
+        if (result != 0)
+        {
+            printf( "\nSUCCESS: Valid chain found at index %zu\n", i );
+            printf( "First working address: 0x%llX\n", result );
+            return result;
+        }
+    }
+
+    printf( "\nAll chains failed to resolve\n" );
+    return 0;
 }
 
 void HotkeyListener( HANDLE hProcess, uintptr_t fovAddrFOVCvar, std::atomic<bool>& running,
@@ -283,6 +366,7 @@ void HotkeyListener( HANDLE hProcess, uintptr_t fovAddrFOVCvar, std::atomic<bool
     const float step = 5.0f;
     float desiredFov = config.initialFov; // Start with initialFov from config
     bool keyStates[4] = { false };
+    bool prevNumpadStates[9] = { false }; // Track previous states for numpad 1-9
 
     while (running)
     {
@@ -293,6 +377,7 @@ void HotkeyListener( HANDLE hProcess, uintptr_t fovAddrFOVCvar, std::atomic<bool
             GetAsyncKeyState( config.resetKey ) & 0x8000
         };
 
+        // Handle original hotkeys
         if (currentKeys[0] && !keyStates[0])
         {
             desiredFov += step;
@@ -310,11 +395,25 @@ void HotkeyListener( HANDLE hProcess, uintptr_t fovAddrFOVCvar, std::atomic<bool
         }
         if (currentKeys[3] && !keyStates[3])
         {
-            desiredFov = config.initialFov; // Reset to initialFov
+            desiredFov = config.initialFov;
             std::cout << "FOV reset to initial value: " << config.initialFov << std::endl;
         }
 
         memcpy( keyStates, currentKeys, sizeof( keyStates ) );
+
+        // Handle numpad 1-9 keys to set FOV 10-90
+        for (int i = 0; i < 9; ++i)
+        {
+            DWORD vk = VK_NUMPAD1 + i;
+            bool currentState = GetAsyncKeyState( vk ) & 0x8000;
+            if (currentState && !prevNumpadStates[i])
+            {
+                desiredFov = (i + 1) * 10.0f;
+                std::cout << "FOV set to " << desiredFov << " via keypad " << (i + 1) << std::endl;
+            }
+            prevNumpadStates[i] = currentState;
+        }
+
         WriteProcessMemory( hProcess, (LPVOID)fovAddrFOVCvar, &desiredFov, sizeof( desiredFov ), NULL );
         Sleep( 50 );
     }
@@ -418,7 +517,7 @@ int main()
             std::cout << "Reading Config and setting Initial FOV set to " << config.initialFov << std::endl;
 		}
         std::cout << "\n=== FOV Control Active ===" << std::endl;
-        std::cout << "Monitoring game status automatically." << std::endl;
+
         // Display active key bindings
         std::cout << "Active Key Bindings:\n"
             << "Increase FOV: " << GetKeyName( config.increaseKey ) << " (0x"
@@ -429,6 +528,9 @@ int main()
             << config.set60Key << ")\n"
             << "Reset FOV to 0 (Default):    " << GetKeyName( config.resetKey ) << " (0x"
             << config.resetKey << ")\n" << std::dec;
+		std::cout << "Keypad 1-9: Set FOV to 10-90\n";
+
+        std::cout << std::endl;
         std::cout << "The game uses 0 to indicate that the default FOV should be used." << std::endl;
         std::cout << "Some sections use preset FOVs, which will be preserved if the FOV CVar is set to 0. " << std::endl;
         std::cout << "One such example is Cloud's Nibelheim section in Chapter 1 where 65 is used." << std::endl;
