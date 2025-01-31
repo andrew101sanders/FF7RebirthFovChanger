@@ -23,6 +23,7 @@ The default hotkeys are:
  - Keypad - : Decrease FOV by 5
  - Keypad * : Set to 60
  - Keypad / : Reset to 0 (Default FOV Cvar)
+ - Keypad 1-9: Set FOV to 10-90
 
 The game uses 0 as the default FOV Cvar value, which lets the game know to use default camera FOVs.
 For example, Cloud's section in Nibelheim has a default FOV of 65, but open world sections are generally 60.
@@ -38,9 +39,6 @@ The executable will be in the bin folder.
 
 ## Other
 
-Finds: 
-- [[["ff7rebirth_.exe" + 0x09020218] + 0x5F0] + 0xE8] + 0x244
-
-which is a static pointer chain to the fov cvar value.
+Finds a static pointer chain to the fov cvar value.
 
 Cheat Engine table included for reference.
